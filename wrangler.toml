@@ -10,7 +10,7 @@ run_worker_first = ["/api/*"]
 [[d1_databases]]
 binding = "DB"
 database_name = "seria-site-management-db"
-database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+database_id = "bc70c6f6-4af5-452c-92be-42345c6e7173"
 migrations_dir = "migrations"
 
 [[durable_objects.bindings]]
