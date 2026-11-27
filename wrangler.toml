@@ -22,6 +22,7 @@ tag = "v1"
 new_sqlite_classes = ["ChatRoom"]
 
 [vars]
-APP_ORIGIN = "https://YOUR-SITE-DOMAIN.example"
-EMAIL_FROM = "Seria Site <no-reply@YOUR-VERIFIED-DOMAIN.example>"
+APP_ORIGIN = "https://sdm.seria0seria0seria.workers.dev"
+EMAIL_FROM = "Seria Site <no-reply@seria-cponry.jp>"
 SESSION_DAYS = "14"
+
