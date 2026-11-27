@@ -15,9 +15,9 @@ const sha256 = async value => {
 const passwordHash = async password => {
   const salt = crypto.getRandomValues(new Uint8Array(16));
   const key = await crypto.subtle.importKey("raw", encoder.encode(password), "PBKDF2", false, ["deriveBits"]);
-  const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", salt, iterations: 310000, hash: "SHA-256" }, key, 256);
+  const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", salt, iterations: 100000, hash: "SHA-256" }, key, 256);
   const b64 = btoa(String.fromCharCode(...new Uint8Array(bits)));
-  return `pbkdf2$310000$${btoa(String.fromCharCode(...salt))}$${b64}`;
+  return `pbkdf2$100000$${btoa(String.fromCharCode(...salt))}$${b64}`;
 };
 const verifyPassword = async (password, stored) => {
   const [kind, rounds, salt64, expected] = (stored || "").split("$");
