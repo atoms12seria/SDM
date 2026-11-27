@@ -41,11 +41,27 @@ $("#loginForm").addEventListener("submit", async e => {
   try { await api("/api/auth/login",{method:"POST",body:JSON.stringify(Object.fromEntries(f))}); await boot(); notice("ログインしました。"); }
   catch(err){ notice(err.message,true); }
 });
+
 $("#registerForm").addEventListener("submit", async e => {
-  e.preventDefault(); clearNotice();
-  try { const f = new FormData(e.currentTarget); const r = await api("/api/auth/register",{method:"POST",body:JSON.stringify(Object.fromEntries(f))}); notice(r.message); e.currentTarget.reset(); }
-  catch(err){ notice(err.message,true); }
+  e.preventDefault();
+  clearNotice();
+
+  const form = e.currentTarget;
+
+  try {
+    const f = new FormData(form);
+    const r = await api("/api/auth/register", {
+      method: "POST",
+      body: JSON.stringify(Object.fromEntries(f))
+    });
+
+    notice(r.message);
+    form.reset();
+  } catch(err) {
+    notice(err.message, true);
+  }
 });
+
 $("#logoutBtn").addEventListener("click", async () => {
   try { await api("/api/auth/logout",{method:"POST",body:"{}"}); } catch {}
   closeSocket(); me=null; showAuth(); notice("ログアウトしました。");
@@ -56,13 +72,27 @@ $("#deviceForm").addEventListener("submit", async e => {
   try { const r = await api("/api/device/register",{method:"POST",body:JSON.stringify({deviceId:deviceId(),...Object.fromEntries(f)})}); notice(r.message); }
   catch(err){ notice(err.message,true); }
 });
+
 $("#requestForm").addEventListener("submit", async e => {
   e.preventDefault();
+
+  const form = e.currentTarget;
+
   try {
-    const r = await api("/api/requests",{method:"POST",body:JSON.stringify(Object.fromEntries(new FormData(e.currentTarget)))});
-    e.currentTarget.reset(); notice("依頼を送信しました。"); await loadRequests(); await openChat(r.requestId);
-  } catch(err){ notice(err.message,true); }
+    const r = await api("/api/requests", {
+      method: "POST",
+      body: JSON.stringify(Object.fromEntries(new FormData(form)))
+    });
+
+    form.reset();
+    notice("依頼を送信しました。");
+    await loadRequests();
+    await openChat(r.requestId);
+  } catch(err) {
+    notice(err.message, true);
+  }
 });
+
 $("#refreshBtn").addEventListener("click", loadRequests);
 $("#closeChat").addEventListener("click", () => { closeSocket(); $("#chatPanel").classList.add("hidden"); activeRequest=null; });
 $("#messageForm").addEventListener("submit", async e => {
