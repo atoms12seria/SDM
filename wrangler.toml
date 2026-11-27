@@ -1,0 +1,27 @@
+name = "seria-site-management"
+main = "src/index.js"
+compatibility_date = "2026-11-26"
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+run_worker_first = ["/api/*"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "seria-site-management-db"
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+migrations_dir = "migrations"
+
+[[durable_objects.bindings]]
+name = "CHAT_ROOMS"
+class_name = "ChatRoom"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["ChatRoom"]
+
+[vars]
+APP_ORIGIN = "https://YOUR-SITE-DOMAIN.example"
+EMAIL_FROM = "Seria Site <no-reply@YOUR-VERIFIED-DOMAIN.example>"
+SESSION_DAYS = "14"
