@@ -69,20 +69,37 @@ async function requireAdmin(request, env, user) {
   await env.DB.prepare("UPDATE devices SET last_seen_at=CURRENT_TIMESTAMP WHERE id=?").bind(deviceId).run();
   return device;
 }
+
 async function sendVerificationEmail(env, email, token) {
-  if (!env.RESEND_API_KEY || !env.EMAIL_FROM || !env.APP_ORIGIN) throw new Error("メール送信設定が未完了です。");
+  if (!env.RESEND_API_KEY || !env.EMAIL_FROM || !env.APP_ORIGIN) {
+    throw new Error("メール送信設定が未完了です。");
+  }
+
   const link = `${env.APP_ORIGIN}/?verify=${encodeURIComponent(token)}`;
+
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
-    headers: { "Authorization": `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" },
+    headers: {
+      "Authorization": `Bearer ${env.RESEND_API_KEY}`,
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify({
-      from: env.EMAIL_FROM, to: [email], subject: "メールアドレスの確認",
+      from: env.EMAIL_FROM,
+      to: [email],
+      subject: "メールアドレスの確認",
       html: `<p>アカウント登録ありがとうございます。</p><p><a href="${link}">メールアドレスを確認する</a></p><p>このリンクは30分で無効になります。</p>`,
       text: `メールアドレスを確認してください: ${link}`
     })
   });
-  if (!response.ok) throw new Error("確認メールを送信できませんでした。送信ドメインとAPIキーを確認してください。");
+
+  const result = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    const detail = result?.message || result?.error || "詳細不明";
+    throw new Error(`Resend送信失敗（HTTP ${response.status}）：${detail}`);
+  }
 }
+
 async function canReadRequest(env, requestId, user) {
   const row = await env.DB.prepare("SELECT id,user_id FROM requests WHERE id=?").bind(requestId).first();
   if (!row) return null;
